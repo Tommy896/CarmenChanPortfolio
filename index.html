@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>陳嘉怡 Chan Ka Yi - Portfolio</title>
+  <!-- 引入文藝 Google 字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* --------------------------------------------------
+       1. 全域變數與核心設定（陽光綠意與暖米色調）
+       -------------------------------------------------- */
+    :root {
+      --bg-color: #f4f1ea;        /* 暖沙米色背景 */
+      --text-main: #2b332c;       /* 深深林綠/近黑字體 */
+      --green-primary: #4a6151;   /* 鼠尾草橄欖綠 */
+      --green-soft: #8ba18e;      /* 柔綠光影 */
+      --sunlight-gold: #dfb15b;   /* 陽光金黃點綴 */
+      --film-dark: #1a1c1a;       /* 膠片黑色 */
+      --card-bg: rgba(255, 255, 255, 0.6);
+      --font-serif: 'Noto Serif TC', serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: var(--font-serif);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    /* --------------------------------------------------
+       2. 頂部觀看進度條 (Scroll Progress Bar)
+       -------------------------------------------------- */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--green-primary), var(--sunlight-gold));
+      z-index: 1000;
+      transition: width 0.1s ease-out;
+    }
+
+    /* --------------------------------------------------
+       3. 固定置頂導覽選單 (Fixed Sticky Nav)
+       -------------------------------------------------- */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 18px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(244, 241, 234, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 999;
+      border-bottom: 1px solid rgba(74, 97, 81, 0.12);
+    }
+
+    .nav-logo {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--green-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--sunlight-gold);
+    }
+
+    /* --------------------------------------------------
+       4. 通用區塊與滾動淡入淡出 (Fade-In/Out Effect)
+       -------------------------------------------------- */
+    section {
+      min-height: auto;
+      padding: 120px 10% 20px 10%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      /* 淡入淡出轉場設定 */
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      color: var(--green-primary);
+      margin-bottom: 2.5rem;
+      letter-spacing: 3px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background-color: var(--sunlight-gold);
+    }
+
+    .sub-title {
+      font-size: 1.3rem;
+      color: var(--green-primary);
+      margin: 3.5rem 0 1.5rem 0;
+      letter-spacing: 2px;
+      border-left: 3px solid var(--sunlight-gold);
+      padding-left: 12px;
+    }
+
+    /* --------------------------------------------------
+       5. 第1部分：個人概括 & 前向 Rolling 16:9 菲林片集
+       -------------------------------------------------- */
+    .hero-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .hero-text {
+      max-width: 680px;
+      line-height: 1.9;
+      font-size: 1.15rem;
+      color: #3d473e;
+    }
+
+    .hero-text p span {
+      background: linear-gradient(180deg, transparent 60%, rgba(223, 177, 93, 0.3) 60%);
+    }
+
+    /* 16:9 菲林條容器 */
+    .film-strip-wrapper {
+      width: 100%;
+      overflow: hidden;
+      background: var(--film-dark);
+      padding: 15px 0;
+      border-radius: 4px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    /* 底片齒孔裝飾 */
+    .film-strip-wrapper::before,
+    .film-strip-wrapper::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: repeating-linear-gradient(
+        90deg,
+        #fff 0, #fff 12px,
+        transparent 12px, transparent 24px
+      );
+      z-index: 2;
+      opacity: 0.3;
+    }
+    .film-strip-wrapper::before { top: 4px; }
+    .film-strip-wrapper::after { bottom: 4px; }
+
+    /* 向前 Rolling 動畫軌道 */
+    .film-track {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      animation: rollForward 25s linear infinite;
+    }
+
+    .film-track:hover {
+      animation-play-state: paused; /* 滑鼠懸停時暫停 */
+    }
+
+    /* 16:9 菲林卡片 */
+    .film-card {
+      width: 320px;
+      aspect-ratio: 16 / 9;
+      background-size: cover;
+      background-position: center;
+      border-radius: 2px;
+      filter: sepia(0.2) contrast(1.05);
+      transition: transform 0.4s ease, filter 0.4s ease;
+      flex-shrink: 0;
+    }
+
+    .film-card:hover {
+      transform: scale(1.03);
+      filter: sepia(0) contrast(1.1);
+    }
+
+    @keyframes rollForward {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* --------------------------------------------------
+       6. 第2部分：個人簡介（學歷、工作背景、技能）
+       -------------------------------------------------- */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .profile-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(139, 161, 142, 0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
+      backdrop-filter: blur(5px);
+    }
+
+    .profile-card h3 {
+      font-size: 1.2rem;
+      color: var(--green-primary);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .profile-list {
+      list-style: none;
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    .profile-list li {
+      margin-bottom: 0.8rem;
+      position: relative;
+      padding-left: 16px;
+    }
+
+    .profile-list li::before {
+      content: '•';
+      color: var(--sunlight-gold);
+      position: absolute;
+      left: 0;
+      font-size: 1.2rem;
+    }
+
+    /* --------------------------------------------------
+       7. 第3部分：作品展覽 (16:9 圖片連結影片)
+       -------------------------------------------------- */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .work-item {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .work-image-holder {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-size: cover;
+      background-position: center;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      transition: transform 0.4s ease;
+    }
+
+    /* 播放圖示 Overlay */
+    .play-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(26, 28, 26, 0.35);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .play-btn {
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--film-dark);
+      font-size: 1.2rem;
+      padding-left: 3px;
+    }
+
+    .work-item:hover .work-image-holder {
+      transform: translateY(-5px);
+    }
+
+    .work-item:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .work-info {
+      margin-top: 1rem;
+    }
+
+    .work-title {
+      font-size: 1.1rem;
+      color: var(--text-main);
+      margin-bottom: 0.3rem;
+    }
+
+    .work-desc {
+      font-size: 0.88rem;
+      color: #6b756d;
+    }
+
+    /* IG Reels 風格區塊 (9:16 卡片) */
+    .ig-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .ig-card {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 12px;
+      border: 1px solid rgba(139, 161, 142, 0.25);
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+      backdrop-filter: blur(5px);
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.35 ease, box-shadow 0.35s ease;
+    }
+
+    .ig-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+    }
+
+    .ig-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .ig-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--sunlight-gold);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .ig-user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ig-username {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.1;
+    }
+
+    .ig-location {
+      font-size: 0.7rem;
+      color: #777;
+    }
+
+    .ig-media-holder {
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .ig-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.45);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      backdrop-filter: blur(4px);
+      letter-spacing: 0.5px;
+    }
+
+    .ig-footer {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .ig-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .ig-likes {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--green-primary);
+    }
+
+    .ig-caption {
+      font-size: 0.82rem;
+      line-height: 1.4;
+      color: #4a544c;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ig-tag {
+      color: var(--green-primary);
+      font-weight: 600;
+    }
+
+    /* 其他參與作品列表風格 (List Format Table) */
+    .other-works-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .other-works-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(139, 161, 142, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .other-works-table th, 
+    .other-works-table td {
+      padding: 16px 20px;
+      text-align: left;
+      font-size: 0.92rem;
+      border-bottom: 1px solid rgba(139, 161, 142, 0.15);
+    }
+
+    .other-works-table th {
+      background: rgba(74, 97, 81, 0.08);
+      color: var(--green-primary);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .other-works-table tbody tr {
+      transition: background-color 0.25s ease;
+    }
+
+    .other-works-table tbody tr:hover {
+      background-color: rgba(223, 177, 93, 0.1);
+    }
+
+    .other-works-table td.role-tag {
+      color: var(--green-primary);
+      font-weight: 600;
+    }
+
+    .other-works-table a {
+      color: var(--green-primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .other-works-table a:hover {
+      color: var(--sunlight-gold);
+    }
+
+    /* --------------------------------------------------
+       8. 第4部分：聯絡方式 & 下載 CV
+       -------------------------------------------------- */
+    .contact-container {
+      max-width: 600px;
+      background: var(--card-bg);
+      padding: 3rem 2.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(139, 161, 142, 0.2);
+    }
+
+    .contact-info {
+      margin-bottom: 2rem;
+      line-height: 2;
+      font-size: 1.05rem;
+    }
+
+    .contact-info strong {
+      color: var(--green-primary);
+      margin-right: 10px;
+    }
+
+    .btn-cv {
+      display: inline-block;
+      padding: 12px 32px;
+      background-color: var(--green-primary);
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: 2px;
+      font-size: 0.95rem;
+      border-radius: 2px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-cv:hover {
+      background-color: var(--sunlight-gold);
+      color: var(--film-dark);
+      transform: translateY(-2px);
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      font-size: 0.85rem;
+      color: #8a948c;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部觀看進度條 -->
+  <div id="progress-bar"></div>
+
+  <!-- 固定置頂導覽選單 -->
+  <nav class="navbar">
+    <div class="nav-logo">陳嘉怡 Carmen Chan</div>
+    <ul class="nav-links">
+      <li><a href="#overview">BIO</a></li>
+      <li><a href="#about">ABOUT</a></li>
+      <li><a href="#portfolio">PRODUCTION</a></li>
+      <li><a href="#contact">CONTACT</a></li>
+    </ul>
+  </nav>
+
+  <!-- 第1部分：個人概括 -->
+  <section id="overview">
+    <h2 class="section-title">Director and Filmmaker</h2>
+    <div class="hero-container">
+      <div class="hero-text">
+        <p>於鏡頭前後皆有實戰經驗的電影創作人。</p>
+        <p>專注導演、副導演、編劇、製片,兼具美術指導、美術製作編劇與演出。</p>
+        <p style="margin-top: 10px;">我是 <span>Carmen Chan</span>，一名專注於拍攝與設計的創意工作者。擅長在大寫的留白裡，尋找細膩的光影脈絡。</p>
+      </div>
+
+      <!-- 向前 rolling 16:9 菲林片集 -->
+      <div class="film-strip-wrapper">
+        <div class="film-track">
+          <!-- 複製兩組圖片以實現無縫循環 Rolling 效果 -->
+          <div class="film-card" style="background-image: url('https://res.cloudinary.com/diypmf7qz/image/upload/v1787492190/%E9%97%9C%E4%BF%82%E6%9C%89%E6%95%88%E6%9C%9F.jpg');"></div>
+          <div class="film-card" style="background-image: url('https://picsum.photos/id/1015/800/450');"></div>
+          <div class="film-card" style="background-image: url('https://picsum.photos/id/1028/800/450');"></div>
+          <div class="film-card" style="background-image: url('https://picsum.photos/id/1039/800/450');"></div>
+          
+          <!-- 重複組 -->
+          <div class="film-card" style="background-image: url('https://res.cloudinary.com/diypmf7qz/image/upload/v1787492190/%E9%97%9C%E4%BF%82%E6%9C%89%E6%95%88%E6%9C%9F.jpg');"></div>
+          <div class="film-card" style="background-image: url('https://picsum.photos/id/1015/800/450');"></div>
+          <div class="film-card" style="background-image: url('https://picsum.photos/id/1028/800/450');"></div>
+          <div class="film-card" style="background-image: url('https://picsum.photos/id/1039/800/450');"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 第2部分：個人簡介 -->
+  <section id="about">
+    <h2 class="section-title">關於/About</h2>
+    <div class="profile-grid">
+      <!-- 學歷背景 -->
+      <div class="profile-card">
+        <h3>學歷背景</h3>
+        <ul class="profile-list">
+          <li><strong>香港浸會大學</strong> — 電影電視文學士(榮譽)學士 (2023 - 2025)</li>
+          <li>主修電影製作和電視製作</li>
+          <li>剪接及劇本編寫</li>
+        </ul>
+      </div>
+
+      <!-- 工作背景 -->
+      <div class="profile-card">
+        <h3>工作經驗</h3>
+        <ul class="profile-list">
+          <li><strong>香港電台</strong> — 技術製作人及多媒體設計師 (2024 - 至今)</li>
+          <li><strong>Freelance 影片製作者</strong> (2024 - 至今)</li>
+          <li><strong>Digital Media LTD</strong> — 拍攝助理 （2021-2023）</li>
+        </ul>
+      </div>
+
+      <!-- 專業技能 -->
+      <div class="profile-card">
+        <h3>專業技能</h3>
+        <ul class="profile-list">
+          <li><strong>導演與剪輯：</strong> Premiere Pro, DaVinci Resolve</li>
+          <li><strong>視覺設計：</strong> Photoshop, Illustrator</li>
+          <li><strong>動態特效：</strong> After Effects</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 第3部分：作品展覽 -->
+  <section id="portfolio">
+    <h2 class="section-title">主要作品/Featured Works</h2>
+    <div class="portfolio-grid">
+      
+      <!-- 作品 1 (點擊連結至相對應影片，例如 YouTube / Vimeo) -->
+      <a href="https://www.youtube.com/watch?v=LBwkt6TTM80&list=RDLBwkt6TTM80&start_radio=1" target="_blank" class="work-item">
+        <div class="work-image-holder" style="background-image: url('https://res.cloudinary.com/diypmf7qz/image/upload/v1787316928/%E6%88%90%E5%A9%9A%E7%A0%B4%E6%B5%AA.png');">
+          <div class="play-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+        </div>
+        <div class="work-info">
+          <div class="work-title">《成婚破浪》謝安琪 Kay Tse</div>
+          <div class="work-desc">副導演</div>
+        </div>
+      </a>
+
+      <!-- 作品 2 -->
+      <a href="https://www.youtube.com/watch?v=h2T8tIzgqMk&list=RDh2T8tIzgqMk&start_radio=1" target="_blank" class="work-item">
+        <div class="work-image-holder" style="background-image: url('https://res.cloudinary.com/diypmf7qz/image/upload/v1787316928/%E5%A9%9A%E5%A7%BB%E4%B8%8D%E6%95%97.png');">
+          <div class="play-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+        </div>
+        <div class="work-info">
+          <div class="work-title">《婚姻不敗》張繼聰 Louis Cheung</div>
+          <div class="work-desc">副導演</div>
+        </div>
+      </a>
+
+      <!-- 作品 3 -->
+      <a href="https://www.youtube.com/watch?v=l2d_3xhdfSI&list=RDl2d_3xhdfSI&start_radio=1" target="_blank" class="work-item">
+        <div class="work-image-holder" style="background-image: url('https://res.cloudinary.com/diypmf7qz/image/upload/v1787316928/%E4%B8%8B%E6%AC%A1%E4%B8%8D%E5%A6%82%E7%9B%B8%E4%BF%A1%E8%87%AA%E5%B7%B1%E4%B8%80%E6%AC%A1.png');">
+          <div class="play-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+        </div>
+        <div class="work-info">
+          <div class="work-title">《下次不如相信自己一次》COLLAR</div>
+          <div class="work-desc">副導演</div>
+        </div>
+      </a>
+
+      <!-- 作品 4 -->
+      <a href="https://www.youtube.com/watch?v=cYsQeAfSeZ8&list=RDcYsQeAfSeZ8&start_radio=1" target="_blank" class="work-item">
+        <div class="work-image-holder" style="background-image: url('https://res.cloudinary.com/diypmf7qz/image/upload/v1787316929/%E9%9B%AA%E5%87%BA%E5%80%8B%E6%9C%AA%E4%BE%86.png');">
+          <div class="play-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+        </div>
+        <div class="work-info">
+          <div class="work-title">《雪出個未來》曾比特 Mike</div>
+          <div class="work-desc">副導演</div>
+        </div>
+      </a>
+
+      <!-- 作品 5 -->
+      <a href="https://www.youtube.com/watch?v=GNVbY1VABbQ&list=RDGNVbY1VABbQ&start_radio=1" target="_blank" class="work-item">
+        <div class="work-image-holder" style="background-image: url('https://res.cloudinary.com/diypmf7qz/image/upload/v1787316929/Close_to_the_Edge.png');">
+          <div class="play-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+        </div>
+        <div class="work-info">
+          <div class="work-title">《Close to the Edge》馮允謙 Jay Fung x Nowhere Boys</div>
+          <div class="work-desc">製片</div>
+        </div>
+      </a>
+
+      <!-- 作品 6 -->
+      <a href="https://www.youtube.com/watch?v=i94giV1TeJw" target="_blank" class="work-item">
+        <div class="work-image-holder" style="background-image: url('https://res.cloudinary.com/diypmf7qz/image/upload/v1787316929/%E6%B3%A1%E6%B3%A1%E6%88%91.png');">
+          <div class="play-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+        </div>
+        <div class="work-info">
+          <div class="work-title">《泡泡我！》IdG Bubbles</div>
+          <div class="work-desc">製片</div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- 社交媒體短影音 (IG Reels 區塊) -->
+    <h3 class="sub-title">社群短影音/Social Media & Reels</h3>
+    <div class="ig-grid">
+      
+      <!-- IG Reel 卡片 1 -->
+      <a href="https://www.instagram.com/reel/DQeC7E9jyC0/?igsh=ZjB0ZTZ1NTBoNG0%3D" target="_blank" class="ig-card">
+        <div class="ig-header">
+          <div class="ig-avatar" style="background-image: url('https://res.cloudinary.com/diypmf7qz/image/upload/v1787327582/water-wild-month.jpg');"></div>
+          <div class="ig-user-info">
+            <span class="ig-username">water_wild_month</span>
+            <span class="ig-location">Commercial Reel</span>
+          </div>
+        </div>
+        <div class="ig-media-holder" style="background-image: url('https://picsum.photos/id/325/450/800');">
+          <div class="play-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+          <span class="ig-badge">🎬 Reels</span>
+        </div>
+        <div class="ig-footer">
+          <div class="ig-actions">
+            <span>❤️ 33k</span>
+            <span>💬 200</span>
+          </div>
+          <p class="ig-caption"> 惠康廣告｜副導演 🎞️ #DirectorCut #Reels</p>
+        </div>
+      </a>
+
+      <!-- IG Reel 卡片 2 -->
+      <a href="https://www.instagram.com/" target="_blank" class="ig-card">
+        <div class="ig-header">
+          <div class="ig-avatar" style="background-image: url('https://picsum.photos/id/64/100/100');"></div>
+          <div class="ig-user-info">
+            <span class="ig-username">carmen.chan_film</span>
+            <span class="ig-location">Commercial Reel</span>
+          </div>
+        </div>
+        <div class="ig-media-holder" style="background-image: url('https://picsum.photos/id/342/450/800');">
+          <div class="play-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+          <span class="ig-badge">🎬 Reels</span>
+        </div>
+        <div class="ig-footer">
+          <div class="ig-actions">
+            <span>❤️ 890</span>
+            <span>💬 25</span>
+          </div>
+          <p class="ig-caption"><span class="ig-tag">@carmen.chan_film</span> 品牌短片企劃，快速切換的視覺節奏與色調試驗 🔥</p>
+        </div>
+      </a>
+
+      <!-- IG Reel 卡片 3 -->
+      <a href="https://www.instagram.com/" target="_blank" class="ig-card">
+        <div class="ig-header">
+          <div class="ig-avatar" style="background-image: url('https://picsum.photos/id/64/100/100');"></div>
+          <div class="ig-user-info">
+            <span class="ig-username">carmen.chan_film</span>
+            <span class="ig-location">Short Clip</span>
+          </div>
+        </div>
+        <div class="ig-media-holder" style="background-image: url('https://picsum.photos/id/445/450/800');">
+          <div class="play-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+          <span class="ig-badge">🎬 Reels</span>
+        </div>
+        <div class="ig-footer">
+          <div class="ig-actions">
+            <span>❤️ 2.1k</span>
+            <span>💬 92</span>
+          </div>
+          <p class="ig-caption"><span class="ig-tag">@carmen.chan_film</span> 街頭側拍實驗：城市裡的留白與呼吸。✨</p>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- 其他參與作品列表 (List Format) -->
+    <h3 class="sub-title">其他參與作品/Additional Credits</h3>
+    <div class="other-works-container">
+      <table class="other-works-table">
+        <thead>
+          <tr>
+            <th>作品名稱</th>
+            <th>類型 / 單位</th>
+            <th>擔當職位</th>
+            <th>連結</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>《關係有效期》短片電影</td>
+            <td>畢業作品</td>
+            <td class="role-tag">導演 / 編劇 / 剪接</td>
+            <td><a href="https://www.youtube.com/watch?v=cYsQeAfSeZ8&list=RDcYsQeAfSeZ8&start_radio=1" target="_blank">觀看作品 ↗</a></td>
+          </tr>
+          <tr>
+            <td>《超級愛！》IdG Bubbles</td>
+            <td>MV</td>
+            <td class="role-tag">製片</td>
+            <td><a href="https://www.youtube.com/watch?v=tWM97gQqji4" target="_blank">觀看作品 ↗</a></td>
+          </tr>
+          <tr>
+            <td>《The Boy Who Wouldn't Grow Up》馮允謙 Jay Fung x Nowhere Boys</td>
+            <td>MV</td>
+            <td class="role-tag">製片</td>
+            <td><a href="https://www.youtube.com/watch?v=rQcXTfduxm4&list=RDrQcXTfduxm4&start_radio=1" target="_blank">觀看作品 ↗</a></td>
+          </tr>
+          <tr>
+            <td>香港電台宣傳圖專案</td>
+            <td>RTHK Special Issue</td>
+            <td class="role-tag">技術製作</td>
+            <td><a href="https://www.facebook.com/share/p/1EXWwBU1zQ/?mibextid=wwXIfr" target="_blank">觀看作品 ↗</a></td>
+          </tr>
+          <tr>
+            <td>香港電台宣傳影片專案</td>
+            <td>RTHK Special Issue</td>
+            <td class="role-tag">技術製作</td>
+            <td><a href="https://www.facebook.com/share/v/1BZ9YkEq3j/?mibextid=wwXIfr" target="_blank">觀看作品 ↗</a></td>
+          </tr>
+          <tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- 第4部分：聯絡方式 -->
+  <section id="contact">
+    <h2 class="section-title">聯絡/Contact</h2>
+    <div class="contact-container">
+      <div class="contact-info">
+        <p><strong>電話：</strong> +852 6578 4462</p>
+        <p><strong>電郵：</strong> <a href="mailto:carmennchan22@gmail.com">carmennchan22@gmail.com</a></p>
+        <p><strong>地點：</strong> Hong Kong</p>
+      </div>
+      
+      <!-- 下載 CV 按鈕 -->
+      <a href="path-to-your-cv.pdf" download class="btn-cv">下載個人履歷 (CV)</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Personal Portfolio. All Rights Reserved.</p>
+  </footer>
+
+  <!-- --------------------------------------------------
+     9. JavaScript 互動邏輯
+     -------------------------------------------------- -->
+  <script>
+    // 1. 頁面頂部觀看進度條
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('progress-bar').style.width = scrolled + '%';
+    });
+
+    // 2. 上下捲動時內容自動淡入淡出 (Intersection Observer)
+    const sections = document.querySelectorAll('section');
+
+    const observerOptions = {
+      root: null,
+      threshold: 0.25 // 當區塊進入畫面 25% 時觸發淡入，離開時淡出
+    };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible'); // 自動淡出效果
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach(section => {
+      sectionObserver.observe(section);
+    });
+  </script>
+</body>
+</html>
